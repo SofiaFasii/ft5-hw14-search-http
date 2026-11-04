@@ -133,6 +133,9 @@ img {
  * Стили компонента ImageGalleryItem
  */
 .ImageGalleryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
   border-radius: 2px;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
     0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
@@ -203,4 +206,27 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.UserLikesBtnShow{
+  margin-top: 10px;
+  background-color: #3f51b5;
+  color: white;
+  width: 140px;
+  height: 30px;
+  border-radius: 3px;
+  justify-self: center;
+  cursor: pointer;
+  border: none;
+  transition: background-color .2s ease;
+}
+.UserLikesBtnShow:hover{
+  background-color: #2a3577;
+}
+.UserLikesBtn{
+  margin: 10px;
+  border: 1px solid #ff4343;
+  border-radius: 2px;
+  background-color: #fff2f2;
+  cursor: pointer;
 }
