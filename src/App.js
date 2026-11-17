@@ -5,43 +5,40 @@ import ImageGallery from "./components/ImageGallery";
 import Button from "./components/Button";
 import Loader from "./components/Loader";
 import Modal from "./components/Modal";
+import { useGalleryReducer } from "./hooks/useGalleryReducer";
 const API_KEY = "57280664-73e0c70a0e8748ccf6861f56f";
+
 
 const creatUrl = (query, pages) =>
   `https://pixabay.com/api/?q=${query}&page=${pages}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`;
 
 function App() {
-  const [query, setQuery] = useState("");
-  const [images, setImages] = useState([]);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const {state, dispatch} = useGalleryReducer()
   const [selectedImg, setSelectedImg] = useState(null);
-  const [userLikes, setUserLikes] = useState(() => {
-    return JSON.parse(localStorage.getItem("userLikes")) || []
-  })
   const [showLikes, setShowLikes] = useState(false)
+
+  const {query, images, page, loading, userLikes} = state
 
   useEffect(() => {
     if (!query) return;
-    setLoading(true);
+    dispatch({type: 'loading', payload: true})
     fetch(creatUrl(query, page))
       .then((resp) => resp.json())
-      .then((data) => setImages((preve) => [...preve, ...data.hits]))
+      .then((data) => dispatch({type: 'images', payload: data.hits}))
       .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
+      .finally(() => dispatch({type: 'loading', payload: false}));
   }, [query, page]);
   useEffect(() => {
     localStorage.setItem("userLikes", JSON.stringify(userLikes))
   }, [userLikes])
 
   const handleSearch = useCallback((word) => {
-    setQuery(word);
-    setPage(1);
-    setImages([]);
+    dispatch({type: 'query', payload: word})
+    dispatch({type: 'reset'})
     setShowLikes(false)
   }, []);
   const handleMore = useCallback(() => {
-    setPage((prev) => prev + 1);
+    dispatch({type: 'page'})
   }, []);
   const handleModal = useCallback((image) => {
     setSelectedImg(image);
@@ -50,11 +47,7 @@ function App() {
     setSelectedImg(null);
   }, []);
   const handleLikes = useCallback((image) => {
-    if(userLikes.some((item) => item.id === image.id)){
-      setUserLikes(userLikes.filter(item => image.id !== item.id))
-    } else{
-      setUserLikes(preve => [...preve, image])
-    }
+    dispatch({type: 'userLikes', payload: image})
   }, [userLikes])
   const visibleImages = useMemo(() => {
     return showLikes ? userLikes : images
